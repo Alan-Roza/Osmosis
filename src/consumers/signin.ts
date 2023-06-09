@@ -1,7 +1,7 @@
-import api from "@/lib/api";
+import http from "@/lib/http";
 
 type SigninData = {
-  login: string
+  username: string
   password: string
 }
 
@@ -10,7 +10,7 @@ type SigninResponse = {
 }
 
 const signin = async (data: SigninData): Promise<SigninResponse> => {
-  const response = await api.post('/signin', data);
+  const response = await http.post('/api/OAuth/Login', data);
   return response.data;
 };
 

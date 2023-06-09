@@ -4,8 +4,15 @@ import { faLock } from "@fortawesome/free-solid-svg-icons";
 import CustomButton from "@/components/common/CustomButton/CustomBottom";
 import CustomInput from "@/components/common/CustomInputIcon/CustomInputIcon";
 import Unauth from "@/components/layout/Unauth";
+import { signin } from "@/consumers/signin";
+import Swal from "sweetalert2";
+import { useRouter } from "next/router";
+import React from "react";
 
 export default function Signin() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+
   return (
     <Unauth
       link={{ href: "/reset/password", textLinkable: "Esqueceu sua senha?" }}
@@ -15,20 +22,34 @@ export default function Signin() {
 
         <Formik
           initialValues={{
-            login: "",
+            username: "",
             password: "",
           }}
-          onSubmit={(values, actions) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              actions.setSubmitting(false);
-            }, 1000);
+          onSubmit={async (values, actions) => {
+            setIsLoading(true);
+            try {
+              const response = await signin({
+                username: values.username,
+                password: values.password,
+              });
+
+              if (response) router.push("/home");
+            } catch (err: any) {
+              console.error(err);
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Algo deu errado.",
+              });
+            } finally {
+              setIsLoading(false);
+            }
           }}
         >
           {(props) => (
             <Form>
               <CustomInput
-                name={"login"}
+                name={"username"}
                 placeholder="Digite o seu usuário"
                 label={"Usuario"}
                 type={"text"}
